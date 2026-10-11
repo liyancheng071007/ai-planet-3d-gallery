@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f3ee">
+  <meta name="description" content="AI星球三维藏品馆：旋转、探索和下载算力币、八块核心芯片与优质数据模型。">
+  <title>AI星球 · 三维藏品馆</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+</head>
+<body>
+  <a href="#collection" class="skip">跳到藏品列表</a>
+  <header><a class="brand" href="#compute-coin"><span>✳</span> AI 星球 <small>OBJECTS LAB</small></a><nav aria-label="主导航"><a href="#collection">探索藏品</a><a href="https://liyancheng071007.github.io/AI-planet/" target="_blank" rel="noopener">返回闯关 ↗</a><a href="https://github.com/liyancheng071007/ai-planet-3d-gallery" target="_blank" rel="noopener">项目源码 ↗</a></nav></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">THE COLLECTION / 001—013</p><h1>让知识，<em>有形可见。</em></h1><p class="lead">触碰一枚灵感，转动一个世界。<br>属于 AI 训练师的三维探索藏品。</p></div><div class="intro-note"><span class="live-dot"></span> REAL-TIME 3D<span>13件原创模型 · 3个探索系列</span></div></section>
+    <section class="studio" aria-labelledby="object-name">
+      <div class="viewport-wrap"><div class="viewport-top"><span id="object-code">COMPUTE TOKEN</span><span class="pill">360° 自由探索</span></div><div id="viewport" tabindex="0" role="region" aria-label="三维模型查看区，可拖动旋转，滚轮缩放"><p id="fallback">三维展台加载中…</p></div><div class="viewport-bottom"><span>拖动旋转 · 滚轮 / 双指缩放</span><button id="reset" type="button">↺ 复位视角</button></div></div>
+      <aside class="inspector"><p id="object-category" class="eyebrow">01 / RESOURCE</p><h2 id="object-name">算力币</h2><p id="object-form" class="form-label"></p><p id="object-meaning" class="description"></p><div class="rule"></div><dl><div><dt>模型轮廓</dt><dd id="spec-form"></dd></div><div><dt>参考尺寸</dt><dd id="spec-size"></dd></div><div><dt>模型结构</dt><dd id="spec-meshes"></dd></div></dl><p id="object-detail" class="detail"></p><div class="controls"><button id="rotate" aria-pressed="false">自动旋转</button><button id="wireframe" aria-pressed="false">线框视图</button></div><button class="download primary" id="download-glb">下载 GLB 模型 <span>↗</span></button><button class="download secondary" id="download-stl">下载 STL 几何 <span>↓</span></button><p class="file-note">GLB 保留材质 · STL 为几何模型<br>供展示与建模参考，打印前需检查与处理。</p><p id="status" role="status" aria-live="polite"></p></aside>
+    </section>
+    <section id="collection" class="collection"><div class="section-head"><div><p class="eyebrow">CURATED FOR CURIOSITY</p><h2>每件藏品，都有一个故事。</h2></div><span id="count">13 件藏品</span></div><div class="filters" role="group" aria-label="筛选藏品"><button data-filter="all" aria-pressed="true">全部藏品 <span>13</span></button><button data-filter="coin" aria-pressed="false">算力币 <span>01</span></button><button data-filter="chip" aria-pressed="false">核心芯片 <span>08</span></button><button data-filter="data" aria-pressed="false">优质数据 <span>04</span></button></div><div id="cards" class="cards"></div></section>
+    <section class="closing"><span class="closing-icon">✧</span><div><p class="eyebrow">SMALL OBJECTS. BIG IDEAS.</p><h2>把抽象的概念，握在想象里。</h2><p>模型是知识的入口。保持好奇，也别忘了核实与思考。</p></div><a href="https://liyancheng071007.github.io/AI-planet/" target="_blank" rel="noopener">开始修复 AI 星球 ↗</a></section>
+  </main>
+  <footer><span>AI PLANET · OBJECTS LAB</span><span>原创参数化模型 / 2026</span><a href="README.md">使用说明 ↗</a></footer>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
