@@ -25,6 +25,8 @@ try{
  await page.locator('#viewport').focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('Home');
  await page.locator('#previous').click();await page.waitForFunction(()=>document.querySelector('#object-name').textContent==='伦理芯片');
  await page.locator('#next').click();await page.waitForFunction(()=>document.querySelector('#object-name').textContent==='未来芯片');
+ await page.locator('#explode').click();assert.equal(await page.locator('#explode').getAttribute('aria-pressed'),'true');
+ await page.locator('#explode').click();assert.equal(await page.locator('#explode').getAttribute('aria-pressed'),'false');
  for(const format of ['glb','stl']){
   const wait=page.waitForEvent('download');await page.locator('#download-'+format).click();
   const download=await wait;assert.ok(download.suggestedFilename().endsWith('.'+format));assert.equal(await download.failure(),null);

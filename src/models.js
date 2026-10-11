@@ -45,7 +45,26 @@ export function createModel(item){
     if(i===1||i===7)box(panel,i===7?1.45:1.7,i===7?1.95:1.7,.16,color,0,0,.2);
     else if(i===6)shape(panel,[[-.82,.83],[.82,.83],[.75,-.35],[0,-1],[-.75,-.35]],.16,color,.2);
     else shape(panel,regular([6,4,64,4,8,3,5,8][i],i===5?1.13:1.05,i===3?0:Math.PI/2),.16,color,.2);
-    for(let k=0;k<4;k++)for(const sign of [-1,1])box(g,.09,.26,.07,gold,(k-1.5)*.24,sign*.85,-.02);
+    const outline=i===1?[[-.85,-.85],[.85,-.85],[.85,.85],[-.85,.85]]:
+      i===7?[[-.725,-.975],[.725,-.975],[.725,.975],[-.725,.975]]:
+      i===6?[[-.82,.83],[.82,.83],[.75,-.35],[0,-1],[-.75,-.35]]:
+      regular(i===2?8:[6,4,64,4,8,3,5,8][i],i===5?1.13:1.05,i===3?0:Math.PI/2);
+    for(let k=0;k<outline.length;k++){
+      const a=outline[k],b=outline[(k+1)%outline.length];
+      for(const t of [.35,.65]){
+        const pin=box(g,.08,.22,.07,gold,a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,-.02);
+        pin.rotation.z=Math.atan2(b[1]-a[1],b[0]-a[0]);
+      }
+    }
+    // Backplate and surface-mounted traces make the reverse worth inspecting.
+    disk(g,.43,.04,material('#242d43',.3,.4),0,0,-.16);
+    for(const x of [-.23,0,.23]){
+      bar(g,x,-.29,x,.29,-.2,gold,.025);
+      disk(g,.047,.025,rim,x,.29,-.21,16);
+      disk(g,.047,.025,rim,x,-.29,-.21,16);
+    }
+    box(g,.32,.26,.08,dark,0,0,-.24);
+    for(let k=0;k<=i;k++)box(g,.045,.06,.03,rim,(k-i/2)*.07,-.43,-.18);
     symbol(g,i,white,.36);
     for(const x of [-.48,.48]){disk(g,.035,.04,rim,x,-.5,.26,16);bar(g,x,-.49,x,-.28,.25,rim,.022);}
     for(let k=0;k<=i;k++)box(g,.045,.045,.045,rim,(k-i/2)*.085,-.65,.25);
@@ -67,6 +86,8 @@ export function createModel(item){
     for(let k=0;k<3;k++)disk(g,.035,.04,rim,(k-1)*.12,-.65,.3,16);
   }
   g.updateMatrixWorld(true);
+  g.traverse(o=>{if(o.isMesh){o.userData.baseZ=o.position.z;const z=o.getWorldPosition(new T.Vector3()).z;o.userData.layer=z>.12?1:z<-.12?-1:0;}});
   return g;
 }
+export function explodeModel(g,amount){g.traverse(o=>{if(o.isMesh)o.position.z=o.userData.baseZ+o.userData.layer*amount;});g.updateMatrixWorld(true);}
 export function disposeModel(g){const geometries=new Set(),materials=new Set();g.traverse(o=>{if(o.isMesh){geometries.add(o.geometry);materials.add(o.material);}});geometries.forEach(x=>x.dispose());materials.forEach(x=>x.dispose());}

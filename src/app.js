@@ -4,10 +4,10 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { STLExporter } from 'three/addons/exporters/STLExporter.js';
 import {catalog,categories} from './catalog.js';
-import {createModel,disposeModel} from './models.js';
+import {createModel,disposeModel,explodeModel} from './models.js';
 
 const $=s=>document.querySelector(s),viewport=$('#viewport');
-let renderer,scene,camera,controls,model,selected=catalog[0],filter='all',wireframe=false,auto=false;
+let renderer,scene,camera,controls,model,selected=catalog[0],filter='all',wireframe=false,auto=false,exploded=false;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function cards(){
   const list=catalog.filter(x=>filter==='all'||x.type===filter);
@@ -21,6 +21,7 @@ function select(id){
   if(scene)scene.add(model);
   model.rotation.set(-.18,-.32,.06);
   model.traverse(o=>{if(o.isMesh)o.material.wireframe=wireframe;});
+  explodeModel(model,exploded?.35:0);
   $('#object-name').textContent=selected.name;$('#object-code').textContent=selected.en;
   $('#object-category').textContent=categories[selected.type]+' / OBJECT '+String(catalog.indexOf(selected)+1).padStart(3,'0');
   $('#object-form').textContent=selected.concept||selected.form;
@@ -104,4 +105,8 @@ $('#share').onclick=async()=>{
 $('#fullscreen').onclick=async()=>{
   try{if(document.fullscreenElement)await document.exitFullscreen();else await $('.viewport-wrap').requestFullscreen();}
   catch{$('#status').textContent='此浏览器不支持全屏，可使用缩放和旋转查看。';}
+};
+$('#explode').onclick=()=>{
+  exploded=!exploded;explodeModel(model,exploded?.35:0);$('#explode').setAttribute('aria-pressed',exploded);
+  $('#status').textContent=exploded?'展示层已展开，下载仍为正常装配状态。':'已恢复正常装配状态。';
 };
