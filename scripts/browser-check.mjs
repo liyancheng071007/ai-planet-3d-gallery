@@ -16,6 +16,15 @@ try{
  await page.locator('#wireframe').click();assert.equal(await page.locator('#wireframe').getAttribute('aria-pressed'),'true');
  await page.locator('#wireframe').click();
  await page.locator('#reset').click();
+ await page.locator('[data-view="front"]').click();
+ await page.waitForTimeout(150);
+ const front=await page.locator('#viewport').screenshot();
+ await page.locator('[data-view="back"]').click();await page.waitForTimeout(150);
+ assert.notDeepEqual(await page.locator('#viewport').screenshot(),front);
+ await page.locator('#zoom-in').click();await page.locator('#zoom-out').click();
+ await page.locator('#viewport').focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('Home');
+ await page.locator('#previous').click();await page.waitForFunction(()=>document.querySelector('#object-name').textContent==='伦理芯片');
+ await page.locator('#next').click();await page.waitForFunction(()=>document.querySelector('#object-name').textContent==='未来芯片');
  for(const format of ['glb','stl']){
   const wait=page.waitForEvent('download');await page.locator('#download-'+format).click();
   const download=await wait;assert.ok(download.suggestedFilename().endsWith('.'+format));assert.equal(await download.failure(),null);

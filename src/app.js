@@ -28,10 +28,15 @@ function select(id){
   $('#spec-form').textContent=selected.form;$('#spec-size').textContent=selected.size;
   $('#spec-meshes').textContent=model.children.length+' 个立体组件';
   $('#object-detail').textContent=selected.detail;$('#status').textContent='';
+  $('#position').textContent=String(catalog.indexOf(selected)+1).padStart(2,'0')+' / 13';
+  $('#share-link').hidden=true;
   document.title=selected.name+' · AI星球三维藏品馆';
   reset();cards();
 }
-function reset(){if(camera){camera.position.set(2,1.5,5.2);controls.target.set(0,0,0);controls.update();}}
+function reset(){if(camera){camera.position.set(2,1.5,5.2);controls.target.set(0,0,0);if(model)model.rotation.set(-.18,-.32,.06);controls.update();}}
+function zoom(factor){if(!camera)return;const offset=camera.position.clone().sub(controls.target);offset.setLength(T.MathUtils.clamp(offset.length()*factor,3,9));camera.position.copy(controls.target).add(offset);controls.update();}
+function orbit(horizontal,vertical){if(!camera)return;const sphere=new T.Spherical().setFromVector3(camera.position.clone().sub(controls.target));sphere.theta+=horizontal;sphere.phi=T.MathUtils.clamp(sphere.phi+vertical,.15,Math.PI-.15);camera.position.copy(controls.target).add(new T.Vector3().setFromSpherical(sphere));controls.update();}
+function navigate(direction){const list=catalog.filter(x=>filter==='all'||x.type===filter),index=list.findIndex(x=>x.id===selected.id);location.hash=list[(index+direction+list.length)%list.length].id;}
 function init(){
   try{
     renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -79,3 +84,24 @@ $('#reset').onclick=reset;
 $('#rotate').onclick=()=>{auto=!auto;$('#rotate').setAttribute('aria-pressed',auto);$('#rotate').textContent=auto?'暂停旋转':'自动旋转';};
 $('#wireframe').onclick=()=>{wireframe=!wireframe;model.traverse(o=>{if(o.isMesh)o.material.wireframe=wireframe;});$('#wireframe').setAttribute('aria-pressed',wireframe);};
 $('#download-glb').onclick=()=>download('glb');$('#download-stl').onclick=()=>download('stl');
+$('#previous').onclick=()=>navigate(-1);$('#next').onclick=()=>navigate(1);
+$('#zoom-in').onclick=()=>zoom(.85);$('#zoom-out').onclick=()=>zoom(1.15);
+document.querySelectorAll('[data-view]').forEach(button=>button.onclick=()=>{
+  if(!camera)return;model.rotation.set(0,0,0);
+  const poses={front:[0,0,5.5],back:[0,0,-5.5],side:[5.5,0,0]};camera.position.set(...poses[button.dataset.view]);controls.update();
+});
+viewport.addEventListener('keydown',e=>{
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-','Home'].includes(e.key))e.preventDefault();
+  if(e.key==='ArrowLeft')orbit(-.15,0);if(e.key==='ArrowRight')orbit(.15,0);
+  if(e.key==='ArrowUp')orbit(0,-.15);if(e.key==='ArrowDown')orbit(0,.15);
+  if(e.key==='+'||e.key==='=')zoom(.85);if(e.key==='-')zoom(1.15);if(e.key==='Home')reset();
+});
+$('#share').onclick=async()=>{
+  const url=new URL(location.href);url.hash=selected.id;
+  try{await navigator.clipboard.writeText(url.href);$('#status').textContent='藏品链接已复制，可直接分享。';}
+  catch{const input=$('#share-link');input.hidden=false;input.value=url.href;input.focus();input.select();$('#status').textContent='请复制下方链接分享。';}
+};
+$('#fullscreen').onclick=async()=>{
+  try{if(document.fullscreenElement)await document.exitFullscreen();else await $('.viewport-wrap').requestFullscreen();}
+  catch{$('#status').textContent='此浏览器不支持全屏，可使用缩放和旋转查看。';}
+};
