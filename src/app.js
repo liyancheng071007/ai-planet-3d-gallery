@@ -9,6 +9,14 @@ import {createModel,disposeModel,explodeModel} from './models.js';
 const $=s=>document.querySelector(s),viewport=$('#viewport');
 let renderer,scene,camera,controls,model,selected=catalog[0],filter='all',wireframe=false,auto=false,exploded=false;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let dirty=true,visible=true,contextLost=false;
+function invalidate(){dirty=true;}
+function fallback(message){
+  contextLost=true;
+  if(renderer)renderer.domElement.hidden=true;
+  $('#static-preview').hidden=false;$('#fallback').hidden=false;$('#fallback').textContent=message;$('#retry3d').hidden=false;
+  for(const selector of ['#reset','#rotate','#wireframe','#explode','#zoom-in','#zoom-out','[data-view]','#fullscreen'])document.querySelectorAll(selector).forEach(button=>button.disabled=true);
+}
 function cards(){
   const list=catalog.filter(x=>filter==='all'||x.type===filter);
   $('#count').textContent=list.length+' 件藏品';
@@ -16,7 +24,7 @@ function cards(){
 }
 function select(id){
   selected=catalog.find(x=>x.id===id)||catalog[0];
-  if(model){scene.remove(model);disposeModel(model);}
+  if(model){if(scene)scene.remove(model);disposeModel(model);}
   model=createModel(selected);
   if(scene)scene.add(model);
   model.rotation.set(-.18,-.32,.06);
@@ -31,8 +39,9 @@ function select(id){
   $('#object-detail').textContent=selected.detail;$('#status').textContent='';
   $('#position').textContent=String(catalog.indexOf(selected)+1).padStart(2,'0')+' / 13';
   $('#share-link').hidden=true;
+  $('#static-preview').src='previews/'+selected.id+'.png';$('#static-preview').alt=selected.name+'模型预览';
   document.title=selected.name+' · AI星球三维藏品馆';
-  reset();cards();
+  reset();cards();invalidate();
 }
 function reset(){if(camera){camera.position.set(2,1.5,5.2);controls.target.set(0,0,0);if(model)model.rotation.set(-.18,-.32,.06);controls.update();}}
 function zoom(factor){if(!camera)return;const offset=camera.position.clone().sub(controls.target);offset.setLength(T.MathUtils.clamp(offset.length()*factor,3,9));camera.position.copy(controls.target).add(offset);controls.update();}
@@ -40,8 +49,8 @@ function orbit(horizontal,vertical){if(!camera)return;const sphere=new T.Spheric
 function navigate(direction){const list=catalog.filter(x=>filter==='all'||x.type===filter),index=list.findIndex(x=>x.id===selected.id);location.hash=list[(index+direction+list.length)%list.length].id;}
 function init(){
   try{
-    renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
-    renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=T.SRGBColorSpace;
+    renderer=new T.WebGLRenderer({antialias:true,alpha:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.5:2));renderer.outputColorSpace=T.SRGBColorSpace;
     renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.88;
     viewport.appendChild(renderer.domElement);$('#fallback').hidden=true;
     scene=new T.Scene();camera=new T.PerspectiveCamera(35,1,.1,100);
@@ -52,9 +61,18 @@ function init(){
     const key=new T.DirectionalLight('#fff6e3',2);key.position.set(3,4,5);scene.add(key);
     const fill=new T.DirectionalLight('#dcd9ff',1);fill.position.set(-3,1,2);scene.add(fill);
     controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=3;controls.maxDistance=9;controls.autoRotateSpeed=.7;
-    new ResizeObserver(()=>{const {width,height}=viewport.getBoundingClientRect();renderer.setSize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();}).observe(viewport);
-    renderer.setAnimationLoop(()=>{controls.autoRotate=auto&&!reduced;controls.update();renderer.render(scene,camera);});
-  }catch(e){$('#fallback').textContent='此设备无法显示实时3D。你仍可浏览说明和下载模型，在建模软件中打开。';}
+    controls.addEventListener('change',invalidate);
+    new ResizeObserver(()=>{const {width,height}=viewport.getBoundingClientRect();if(!width||!height)return;renderer.setSize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();invalidate();}).observe(viewport);
+    new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible)invalidate();}).observe(viewport);
+    renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();fallback('3D连接已中断，已切换为模型预览；下载仍可使用。');});
+    renderer.setAnimationLoop(()=>{
+      if(document.hidden||!visible||contextLost)return;
+      controls.autoRotate=auto&&!reduced;
+      const changed=controls.update();
+      if(dirty||changed||controls.autoRotate){renderer.render(scene,camera);dirty=false;}
+    });
+    if(reduced){$('#rotate').disabled=true;$('#rotate').textContent='已减少动画';}
+  }catch(e){fallback('此设备无法显示实时3D，现为模型预览；仍可下载模型。');}
 }
 function save(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
 async function download(format){
@@ -83,7 +101,7 @@ document.addEventListener('click',e=>{
 });
 $('#reset').onclick=reset;
 $('#rotate').onclick=()=>{auto=!auto;$('#rotate').setAttribute('aria-pressed',auto);$('#rotate').textContent=auto?'暂停旋转':'自动旋转';};
-$('#wireframe').onclick=()=>{wireframe=!wireframe;model.traverse(o=>{if(o.isMesh)o.material.wireframe=wireframe;});$('#wireframe').setAttribute('aria-pressed',wireframe);};
+$('#wireframe').onclick=()=>{wireframe=!wireframe;model.traverse(o=>{if(o.isMesh)o.material.wireframe=wireframe;});$('#wireframe').setAttribute('aria-pressed',wireframe);invalidate();};
 $('#download-glb').onclick=()=>download('glb');$('#download-stl').onclick=()=>download('stl');
 $('#previous').onclick=()=>navigate(-1);$('#next').onclick=()=>navigate(1);
 $('#zoom-in').onclick=()=>zoom(.85);$('#zoom-out').onclick=()=>zoom(1.15);
@@ -108,5 +126,7 @@ $('#fullscreen').onclick=async()=>{
 };
 $('#explode').onclick=()=>{
   exploded=!exploded;explodeModel(model,exploded?.35:0);$('#explode').setAttribute('aria-pressed',exploded);
+  invalidate();
   $('#status').textContent=exploded?'展示层已展开，下载仍为正常装配状态。':'已恢复正常装配状态。';
 };
+$('#retry3d').onclick=()=>location.reload();
