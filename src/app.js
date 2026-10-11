@@ -12,7 +12,7 @@ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function cards(){
   const list=catalog.filter(x=>filter==='all'||x.type===filter);
   $('#count').textContent=list.length+' 件藏品';
-  $('#cards').innerHTML=list.map(x=>'<button class="card" data-model="'+x.id+'" aria-pressed="'+(x.id===selected.id)+'" style="--accent:'+x.color+'"><div class="card-art" aria-hidden="true">'+x.icon+'</div><div class="card-info"><div class="card-top"><span>'+categories[x.type]+'</span><span>↗</span></div><h3>'+x.name+'</h3><p>'+x.form+'</p></div></button>').join('');
+  $('#cards').innerHTML=list.map(x=>'<button class="card" data-model="'+x.id+'" aria-pressed="'+(x.id===selected.id)+'" style="--accent:'+x.color+'"><div class="card-art" aria-hidden="true"><img src="previews/'+x.id+'.png" loading="lazy" width="600" height="600" alt=""></div><div class="card-info"><div class="card-top"><span>'+categories[x.type]+'</span><span>↗</span></div><h3>'+x.name+'</h3><p>'+x.form+'</p></div></button>').join('');
 }
 function select(id){
   selected=catalog.find(x=>x.id===id)||catalog[0];
@@ -36,14 +36,15 @@ function init(){
   try{
     renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
     renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=T.SRGBColorSpace;
-    renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.3;
+    renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.88;
     viewport.appendChild(renderer.domElement);$('#fallback').hidden=true;
     scene=new T.Scene();camera=new T.PerspectiveCamera(35,1,.1,100);
     const environment=new RoomEnvironment(),pmrem=new T.PMREMGenerator(renderer);
     const env=pmrem.fromScene(environment,.04);scene.environment=env.texture;environment.dispose();pmrem.dispose();
-    scene.add(new T.HemisphereLight('#ffffff','#c7c5b8',2));
-    const key=new T.DirectionalLight('#fff6e3',3);key.position.set(3,4,5);scene.add(key);
-    const fill=new T.DirectionalLight('#dcd9ff',2);fill.position.set(-3,1,2);scene.add(fill);
+    scene.environmentIntensity=.7;
+    scene.add(new T.HemisphereLight('#ffffff','#929387',.8));
+    const key=new T.DirectionalLight('#fff6e3',2);key.position.set(3,4,5);scene.add(key);
+    const fill=new T.DirectionalLight('#dcd9ff',1);fill.position.set(-3,1,2);scene.add(fill);
     controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=3;controls.maxDistance=9;controls.autoRotateSpeed=.7;
     new ResizeObserver(()=>{const {width,height}=viewport.getBoundingClientRect();renderer.setSize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();}).observe(viewport);
     renderer.setAnimationLoop(()=>{controls.autoRotate=auto&&!reduced;controls.update();renderer.render(scene,camera);});
