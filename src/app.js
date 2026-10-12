@@ -1,10 +1,9 @@
 import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-import { STLExporter } from 'three/addons/exporters/STLExporter.js';
 import {catalog,categories} from './catalog.js';
-import {createModel,disposeModel,explodeModel} from './models.js';
+import {createModel,disposeModel,explodeModel,inspectModel} from './models.js';
+import {exportModel} from './export.js';
 
 const $=s=>document.querySelector(s),viewport=$('#viewport');
 let renderer,scene,camera,controls,model,selected=catalog[0],filter='all',wireframe=false,auto=false,exploded=false;
@@ -26,6 +25,7 @@ function select(id){
   selected=catalog.find(x=>x.id===id)||catalog[0];
   if(model){if(scene)scene.remove(model);disposeModel(model);}
   model=createModel(selected);
+  const info=inspectModel(model);
   if(scene)scene.add(model);
   model.rotation.set(-.18,-.32,.06);
   model.traverse(o=>{if(o.isMesh)o.material.wireframe=wireframe;});
@@ -34,8 +34,8 @@ function select(id){
   $('#object-category').textContent=categories[selected.type]+' / OBJECT '+String(catalog.indexOf(selected)+1).padStart(3,'0');
   $('#object-form').textContent=selected.concept||selected.form;
   $('#object-meaning').textContent=selected.meaning;
-  $('#spec-form').textContent=selected.form;$('#spec-size').textContent=selected.size;
-  $('#spec-meshes').textContent=model.children.length+' 个立体组件';
+  $('#spec-form').textContent=selected.form;$('#spec-size').textContent=info.sizeMM.join(' × ')+' mm';
+  $('#spec-meshes').textContent=info.meshes+' 个组件 / '+Math.round(info.triangles/1000)+'k 三角面';
   $('#object-detail').textContent=selected.detail;$('#status').textContent='';
   $('#position').textContent=String(catalog.indexOf(selected)+1).padStart(2,'0')+' / 13';
   $('#share-link').hidden=true;
@@ -77,19 +77,14 @@ function init(){
 function save(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
 async function download(format){
   $('#status').textContent='正在准备 '+format.toUpperCase()+' 文件…';
-  const asset=createModel(selected);
+  const item=selected;
+  $('#download-glb').disabled=true;$('#download-stl').disabled=true;
   try{
-    if(format==='glb'){
-      const result=await new GLTFExporter().parseAsync(asset,{binary:true});
-      save(new Blob([result],{type:'model/gltf-binary'}),selected.id+'.glb');
-    }else{
-      // Physical reference: 1 model unit = 20 mm. STL itself has no unit metadata.
-      asset.scale.setScalar(20);asset.updateMatrixWorld(true);
-      save(new Blob([new STLExporter().parse(asset,{binary:true})],{type:'application/octet-stream'}),selected.id+'.stl');
-    }
+    const result=await exportModel(item,format);
+    save(new Blob([result],{type:format==='glb'?'model/gltf-binary':'application/octet-stream'}),item.id+'.'+format);
     $('#status').textContent='文件已准备好，请在浏览器下载中查看。';
   }catch(e){$('#status').textContent='导出失败，请重试或查看项目源码。';}
-  finally{disposeModel(asset);}
+  finally{$('#download-glb').disabled=false;$('#download-stl').disabled=false;}
 }
 init();select(location.hash.slice(1));
 window.addEventListener('hashchange',()=>{if(catalog.some(x=>x.id===location.hash.slice(1)))select(location.hash.slice(1));});

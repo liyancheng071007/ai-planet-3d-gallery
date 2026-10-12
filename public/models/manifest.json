@@ -1,0 +1,281 @@
+{
+  "units": {
+    "glb": "metres",
+    "stl": "millimetres"
+  },
+  "models": [
+    {
+      "id": "compute-coin",
+      "name": "算力币",
+      "sizeMM": [
+        41.4,
+        41.4,
+        9.6
+      ],
+      "meshes": 63,
+      "triangles": 32696,
+      "files": {
+        "glb": {
+          "path": "models/compute-coin.glb",
+          "bytes": 2931528
+        },
+        "stl": {
+          "path": "models/compute-coin.stl",
+          "bytes": 1634884
+        }
+      }
+    },
+    {
+      "id": "chip-data",
+      "name": "数据采集芯片",
+      "sizeMM": [
+        40.8,
+        43.8,
+        13.4
+      ],
+      "meshes": 36,
+      "triangles": 15652,
+      "files": {
+        "glb": {
+          "path": "models/chip-data.glb",
+          "bytes": 1507464
+        },
+        "stl": {
+          "path": "models/chip-data.stl",
+          "bytes": 782684
+        }
+      }
+    },
+    {
+      "id": "chip-training",
+      "name": "训练芯片",
+      "sizeMM": [
+        38.4,
+        38.4,
+        14.2
+      ],
+      "meshes": 38,
+      "triangles": 18768,
+      "files": {
+        "glb": {
+          "path": "models/chip-training.glb",
+          "bytes": 1696632
+        },
+        "stl": {
+          "path": "models/chip-training.stl",
+          "bytes": 938484
+        }
+      }
+    },
+    {
+      "id": "chip-inference",
+      "name": "推理芯片",
+      "sizeMM": [
+        43.6,
+        43.6,
+        13.5
+      ],
+      "meshes": 43,
+      "triangles": 23188,
+      "files": {
+        "glb": {
+          "path": "models/chip-inference.glb",
+          "bytes": 2005064
+        },
+        "stl": {
+          "path": "models/chip-inference.stl",
+          "bytes": 1159484
+        }
+      }
+    },
+    {
+      "id": "chip-fairness",
+      "name": "公平芯片",
+      "sizeMM": [
+        44.3,
+        44.3,
+        13.9
+      ],
+      "meshes": 40,
+      "triangles": 16852,
+      "files": {
+        "glb": {
+          "path": "models/chip-fairness.glb",
+          "bytes": 1626160
+        },
+        "stl": {
+          "path": "models/chip-fairness.stl",
+          "bytes": 842684
+        }
+      }
+    },
+    {
+      "id": "chip-prompt",
+      "name": "提示芯片",
+      "sizeMM": [
+        43.7,
+        43.7,
+        14.1
+      ],
+      "meshes": 45,
+      "triangles": 20212,
+      "files": {
+        "glb": {
+          "path": "models/chip-prompt.glb",
+          "bytes": 1943240
+        },
+        "stl": {
+          "path": "models/chip-prompt.stl",
+          "bytes": 1010684
+        }
+      }
+    },
+    {
+      "id": "chip-fact",
+      "name": "核查芯片",
+      "sizeMM": [
+        41.1,
+        37.2,
+        14.1
+      ],
+      "meshes": 37,
+      "triangles": 17092,
+      "files": {
+        "glb": {
+          "path": "models/chip-fact.glb",
+          "bytes": 1535028
+        },
+        "stl": {
+          "path": "models/chip-fact.stl",
+          "bytes": 854684
+        }
+      }
+    },
+    {
+      "id": "chip-ethics",
+      "name": "伦理芯片",
+      "sizeMM": [
+        36.3,
+        39.9,
+        14.1
+      ],
+      "meshes": 44,
+      "triangles": 19812,
+      "files": {
+        "glb": {
+          "path": "models/chip-ethics.glb",
+          "bytes": 1913988
+        },
+        "stl": {
+          "path": "models/chip-ethics.stl",
+          "bytes": 990684
+        }
+      }
+    },
+    {
+      "id": "chip-future",
+      "name": "未来芯片",
+      "sizeMM": [
+        33.4,
+        43.4,
+        14.4
+      ],
+      "meshes": 44,
+      "triangles": 19960,
+      "files": {
+        "glb": {
+          "path": "models/chip-future.glb",
+          "bytes": 1917148
+        },
+        "stl": {
+          "path": "models/chip-future.stl",
+          "bytes": 998084
+        }
+      }
+    },
+    {
+      "id": "data-image",
+      "name": "图像数据匣",
+      "sizeMM": [
+        37.3,
+        29.9,
+        13.2
+      ],
+      "meshes": 8,
+      "triangles": 2288,
+      "files": {
+        "glb": {
+          "path": "models/data-image.glb",
+          "bytes": 210116
+        },
+        "stl": {
+          "path": "models/data-image.stl",
+          "bytes": 114484
+        }
+      }
+    },
+    {
+      "id": "data-text",
+      "name": "文本数据簿",
+      "sizeMM": [
+        31.5,
+        36.4,
+        10.4
+      ],
+      "meshes": 11,
+      "triangles": 4896,
+      "files": {
+        "glb": {
+          "path": "models/data-text.glb",
+          "bytes": 473372
+        },
+        "stl": {
+          "path": "models/data-text.stl",
+          "bytes": 244884
+        }
+      }
+    },
+    {
+      "id": "data-audio",
+      "name": "音频数据舱",
+      "sizeMM": [
+        36,
+        36,
+        10.9
+      ],
+      "meshes": 14,
+      "triangles": 7276,
+      "files": {
+        "glb": {
+          "path": "models/data-audio.glb",
+          "bytes": 582948
+        },
+        "stl": {
+          "path": "models/data-audio.stl",
+          "bytes": 363884
+        }
+      }
+    },
+    {
+      "id": "data-table",
+      "name": "结构数据阵列",
+      "sizeMM": [
+        33,
+        33,
+        16.7
+      ],
+      "meshes": 13,
+      "triangles": 6072,
+      "files": {
+        "glb": {
+          "path": "models/data-table.glb",
+          "bytes": 587932
+        },
+        "stl": {
+          "path": "models/data-table.stl",
+          "bytes": 303684
+        }
+      }
+    }
+  ]
+}

@@ -90,4 +90,10 @@ export function createModel(item){
   return g;
 }
 export function explodeModel(g,amount){g.traverse(o=>{if(o.isMesh)o.position.z=o.userData.baseZ+o.userData.layer*amount;});g.updateMatrixWorld(true);}
+export function inspectModel(g){
+  const size=new T.Box3().setFromObject(g).getSize(new T.Vector3()).multiplyScalar(20);
+  let meshes=0,triangles=0;
+  g.traverse(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;}});
+  return {sizeMM:size.toArray().map(n=>Number(n.toFixed(1))),meshes,triangles};
+}
 export function disposeModel(g){const geometries=new Set(),materials=new Set();g.traverse(o=>{if(o.isMesh){geometries.add(o.geometry);materials.add(o.material);}});geometries.forEach(x=>x.dispose());materials.forEach(x=>x.dispose());}

@@ -1,5 +1,11 @@
-import {mkdir,copyFile,cp,readFile} from 'node:fs/promises';
+import {mkdir,copyFile,cp,readFile,rm} from 'node:fs/promises';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const project=path.resolve(fileURLToPath(new URL('../',import.meta.url)));
+const output=path.join(project,'dist');
+if(path.resolve('dist')!==output)throw Error('Run build from this repository root.');
+// The resolved deletion target is the generated dist child of this exact project.
+await rm(output,{recursive:true,force:true});
 await mkdir('dist/vendor',{recursive:true});
 for(const f of ['index.html','styles.css','README.md'])await copyFile(f,'dist/'+f);
 await cp('src','dist/src',{recursive:true});
